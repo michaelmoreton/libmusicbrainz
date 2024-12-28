@@ -9,3 +9,4 @@ libmusicbrainz5cc.pc
 docs/
 install_manifest.txt
 ImportExecutables.cmake
+src/libmusicbrainz5cc.so*
