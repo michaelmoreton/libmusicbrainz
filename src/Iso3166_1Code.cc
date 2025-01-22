@@ -44,11 +44,6 @@ MusicBrainz5::CIso3166_1Code::CIso3166_1Code(const XMLNode& Node)
 :	CEntity(),
 	m_d(new CIso3166_1CodePrivate)
 {
-	#ifdef MIKE
-    std::string NodeName=Node.getName();
-    std::cerr << "CIso3166_1Code::CIso3166_1Code(" << NodeName << ")" << std::endl;
-#endif
-
 	if (!Node.isEmpty())
 	{
 		//std::cout << "Iso3166_1Code node: " << std::endl << Node.createXMLString(true) << std::endl;
@@ -59,10 +54,6 @@ MusicBrainz5::CIso3166_1Code::CIso3166_1Code(const XMLNode& Node)
 			ProcessItem(Node,m_d->m_Code);
 		}
 	}
-#ifdef MIKE
-	else
-		std::cerr << "Node is empty\n";
-#endif
 }
 
 MusicBrainz5::CIso3166_1Code::CIso3166_1Code(const CIso3166_1Code& Other)
@@ -115,10 +106,6 @@ void MusicBrainz5::CIso3166_1Code::ParseAttribute(const std::string& Name, const
 void MusicBrainz5::CIso3166_1Code::ParseElement(const XMLNode& Node)
 {
 	std::string NodeName=Node.getName();
-
-#ifdef MIKE
-	std::cerr << "CIso3166_1Code::ParseElement(" << NodeName << ")" << std::endl;
-#endif
 
 #ifdef _MB5_DEBUG_
 	std::cerr << "Unrecognised release event element: '" << NodeName << "'" << std::endl;

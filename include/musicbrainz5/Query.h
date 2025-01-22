@@ -34,6 +34,7 @@
 #include "musicbrainz5/Metadata.h"
 
 #include "musicbrainz5/xmlParser.h"
+#include "musicbrainz5/jsonparser.h"
 
 #include <string>
 #include <map>
@@ -358,6 +359,44 @@ namespace MusicBrainz5
 		CMetadata Query(const std::string& Entity,const std::string& ID="",const std::string& Resource="",const tParamMap& Params=tParamMap());
 
 		/**
+		 * @brief Perform a generic query returning the JSON object tree
+		 *
+		 * Performs a generic query with the result passed as a JSON object tree.
+		 *
+		 * Assuming the following parameters are set:
+		 *
+		 * "param1" = "p1v1 p1v2 p1v3"<br>
+		 * "param2" = "p2v1"<br>
+		 * "param3" = ""<br>
+		 *
+		 * The following query will be generated:
+		 *
+		 * /ws/2/Entity/ID/Resource?param1=p1v1+p1v2+p1v3&param2=p2v1&param3
+		 *
+		 * If any of ID or Resource are empty, those components will be omitted from the query.
+		 *
+		 * For full details about generating queries, see the
+		 * <a target="_blank" href="http://musicbrainz.org/doc/XML_Web_Service/Version_2">web service</a>
+		 * documentation.
+		 *
+		 * @param Entity Entity to lookup (e.g. artist, release, discid)
+		 * @param ID The MusicBrainz ID of the entity
+		 * @param Resource The resource (currently only used for collections)
+		 * @param Params Map of parameters to add to the query (e.g. inc)
+		 *
+		 * @return MusicBrainz5::CMetadata object
+		 *
+		 * @throw CConnectionError An error occurred connecting to the web server
+		 * @throw CTimeoutError A timeout occurred when connecting to the web server
+		 * @throw CAuthenticationError An authentication error occurred
+		 * @throw CFetchError An error occurred fetching data
+		 * @throw CRequestError The request was invalid
+		 * @throw CResourceNotFoundError The requested resource was not found
+		 */
+
+		JsonValue JsonQuery(const std::string& Entity,const std::string& ID="",const std::string& Resource="",const tParamMap& Params=tParamMap());
+
+		/**
 		 * @brief Add entries to the specified collection
 		 *
 		 * Add a list of releases to the specified collection.
@@ -437,12 +476,14 @@ namespace MusicBrainz5
 	private:
 		CQueryPrivate * const m_d;
 
-		CMetadata PerformQuery(const std::string& Query);
+		int PerformQuery(const std::string& Query, std::vector<unsigned char> &Data);
+		CMetadata ParseXmlResponse(const std::vector<unsigned char> &Data, CMetadata &Metadata);
 		void WaitRequest() const;
 		std::string UserAgent() const;
 		bool EditCollection(const std::string& CollectionID, const std::vector<std::string>& Entries, const std::string& Action);
 		std::string URIEscape(const std::string& URI);
 		std::string URLEncode(const std::map<std::string,std::string>& Params);
+		void formURL(std::stringstream &Os, const std::string& Entity, const std::string& ID, const std::string& Resource, const tParamMap& Params);
 	};
 }
 

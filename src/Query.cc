@@ -116,11 +116,11 @@ void MusicBrainz5::CQuery::SetProxyPassword(const std::string& ProxyPassword)
 	m_d->m_ProxyPassword=ProxyPassword;
 }
 
-MusicBrainz5::CMetadata MusicBrainz5::CQuery::PerformQuery(const std::string& Query)
+int MusicBrainz5::CQuery::PerformQuery(const std::string& Query, std::vector<unsigned char> &Data)
 {
 	WaitRequest();
 
-	CMetadata Metadata;
+	int Ret=-1;
 
 	CHTTPFetch Fetch(UserAgent(),m_d->m_Server,m_d->m_Port);
 
@@ -144,7 +144,7 @@ MusicBrainz5::CMetadata MusicBrainz5::CQuery::PerformQuery(const std::string& Qu
 
 	try
 	{
-		int Ret=Fetch.Fetch(Query);
+		Ret=Fetch.Fetch(Query);
 
 #ifdef _MB5_DEBUG_
 		//std::cerr << "Ret: " << Ret << std::endl;
@@ -152,24 +152,7 @@ MusicBrainz5::CMetadata MusicBrainz5::CQuery::PerformQuery(const std::string& Qu
 
 		if (Ret>0)
 		{
-			std::vector<unsigned char> Data=Fetch.Data();
-			std::string strData(Data.begin(),Data.end());
-
-#ifdef _MB5_DEBUG_
-			//std::cerr << "Ret is '" << strData << "'" << std::endl;
-#endif
-
-			XMLResults Results;
-			XMLNode *TopNode = XMLRootNode::parseString(strData, &Results);
-			if (Results.code==eXMLErrorNone)
-			{
-				XMLNode MetadataNode=*TopNode;
-				if (!MetadataNode.isEmpty())
-				{
-					Metadata=CMetadata(MetadataNode);
-				}
-			}
-			delete TopNode;
+			Data=Fetch.Data();
 		}
 	}
 
@@ -227,32 +210,93 @@ MusicBrainz5::CMetadata MusicBrainz5::CQuery::PerformQuery(const std::string& Qu
 		throw;
 	}
 
+	return Ret;
+}
+
+MusicBrainz5::CMetadata MusicBrainz5::CQuery::ParseXmlResponse(const std::vector<unsigned char> &Data, CMetadata &Metadata)
+{
+	std::string strData(Data.begin(),Data.end());
+
+#ifdef _MB5_DEBUG_
+	//std::cerr << "Ret is '" << strData << "'" << std::endl;
+#endif
+
+	XMLResults Results;
+	XMLNode *TopNode = XMLRootNode::parseString(strData, &Results);
+	if (Results.code==eXMLErrorNone)
+	{
+		XMLNode MetadataNode=*TopNode;
+		if (!MetadataNode.isEmpty())
+		{
+			Metadata=CMetadata(MetadataNode);
+		}
+	}
+	delete TopNode;
+
 	return Metadata;
 }
+
+void MusicBrainz5::CQuery::formURL(std::stringstream &Os, const std::string& Entity, const std::string& ID, const std::string& Resource, const tParamMap& Params)
+{
+	Os << "/ws/2/" << Entity;
+
+	if (!ID.empty())
+	{
+		Os << "/" << ID;
+
+		if (!Resource.empty())
+			Os << "/" << Resource;
+	}
+
+	if (!Params.empty())
+		Os << "?" << URLEncode(Params);
+}
+
 
 MusicBrainz5::CMetadata MusicBrainz5::CQuery::Query(const std::string& Entity, const std::string& ID, const std::string& Resource, const tParamMap& Params)
 {
 	std::stringstream os;
-
-	os << "/ws/2/" << Entity;
-
-	if (!ID.empty())
-	{
-		os << "/" << ID;
-
-		if (!Resource.empty())
-			os << "/" << Resource;
-	}
-
-	if (!Params.empty())
-		os << "?" << URLEncode(Params);
+	formURL(os, Entity, ID, Resource, Params);
 
 #ifdef _MB5_DEBUG_
 	//std::cerr << "Query is '" << os.str() << "'" << std::endl;
 #endif
 
-	return PerformQuery(os.str());
+	std::vector<unsigned char> Data;
+	int Ret = PerformQuery(os.str(), Data);
+	CMetadata Metadata;
+	if (Ret>0)
+	{
+		ParseXmlResponse(Data, Metadata);
+	}
+
+	return Metadata;
 }
+
+JsonValue MusicBrainz5::CQuery::JsonQuery(const std::string& Entity, const std::string& ID, const std::string& Resource, const tParamMap& Params)
+{
+	tParamMap copyParams = Params;
+	copyParams["fmt"] = "json";
+
+	std::stringstream os;
+	formURL(os, Entity, ID, Resource, copyParams);
+
+#ifdef _MB5_DEBUG_
+	//std::cerr << "Query is '" << os.str() << "'" << std::endl;
+#endif
+
+	std::vector<unsigned char> Data;
+	int Ret = PerformQuery(os.str(), Data);
+	JsonValue JsonTree;
+	if (Ret>0)
+	{
+		std::string strData(Data.begin(),Data.end());
+		JsonTree.parse(strData);
+	}
+
+	return JsonTree;
+}
+
 
 MusicBrainz5::CReleaseList MusicBrainz5::CQuery::LookupDiscID(const std::string& DiscID)
 {

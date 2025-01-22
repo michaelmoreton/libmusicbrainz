@@ -87,10 +87,6 @@ void MusicBrainz5::CReleaseEventList::ParseElement(const XMLNode& Node)
 {
 	std::string NodeName=Node.getName();
 
-#ifdef MIKE
-    std::cerr << "CReleaseEventList::ParseElement(" << NodeName << ")" << std::endl;
-#endif
-
 	CListImpl<CReleaseEvent>::ParseElement(Node);
 }
 

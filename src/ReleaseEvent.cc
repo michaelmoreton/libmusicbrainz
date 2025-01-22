@@ -107,9 +107,6 @@ void MusicBrainz5::CReleaseEvent::ParseElement(const XMLNode& Node)
 {
 	std::string NodeName=Node.getName();
 
-#ifdef MIKE
-	std::cerr << "CReleaseEvent::ParseElement(" << NodeName << ")" << std::endl;
-#endif
 	if ("date"==NodeName)
 	{
 		ProcessItem(Node,m_d->m_Date);

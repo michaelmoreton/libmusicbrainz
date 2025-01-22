@@ -84,12 +84,6 @@ void MusicBrainz5::CIso3166_1CodeList::ParseAttribute(const std::string& Name, c
 
 void MusicBrainz5::CIso3166_1CodeList::ParseElement(const XMLNode& Node)
 {
-
-#ifdef MIKE
-	std::string NodeName=Node.getName();
-	std::cerr << "CIso3166_1CodeList::ParseElement(" << NodeName << ")" << std::endl;
-#endif
-
 	CListImpl<CIso3166_1Code>::ParseElement(Node);
 }
 

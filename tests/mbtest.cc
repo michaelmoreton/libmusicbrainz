@@ -52,6 +52,23 @@
 #include "musicbrainz5/IPI.h"
 #include "musicbrainz5/IPIList.h"
 #include "musicbrainz5/Lifespan.h"
+#include "musicbrainz5/jsonparser.h"
+
+#define CHECK_JSON_EXCEPTION(typeName, field, exceptionType) \
+	{	\
+		bool passed = false;	\
+		try {	\
+			typeName wrongType = field;	\
+			(void)wrongType;	\
+		} catch (exceptionType &e) {	\
+			passed = true;	\
+		}	\
+		\
+		if (!passed) {	\
+			std::cerr << "Failed to generate " #exceptionType " exception";	\
+			exit(1);	\
+		}	\
+	}
 
 void PrintRelationList(MusicBrainz5::CRelationList *RelationList)
 {
@@ -66,6 +83,20 @@ void PrintRelationList(MusicBrainz5::CRelationList *RelationList)
 
 int main(int argc, const char *argv[])
 {
+	MusicBrainz5::CQuery jsonQuery("MBTest/v1.0","musicbrainz.org");
+	JsonValue json=jsonQuery.JsonQuery("artist","4b585938-f271-45e2-b19a-91c634b5e396");
+	std::string jsonText;
+	json.prettyPrint(jsonText);
+	std::cout << jsonText << std::endl;
+	std::string name = json["name"];
+	std::string from = json["area"]["name"];
+	std::cout << "Artist name is '" << name << "' from '" << from << "'\n";
+
+	CHECK_JSON_EXCEPTION(bool, json["area"]["name"], JsonValue::AccessTypeException);
+	CHECK_JSON_EXCEPTION(long, json["area"]["name"], JsonValue::AccessTypeException);
+	CHECK_JSON_EXCEPTION(double, json["area"]["name"], JsonValue::AccessTypeException);
+	CHECK_JSON_EXCEPTION(std::string, json["area"]["type"], JsonValue::NullTypeException);
+
 	MusicBrainz5::CQuery MB2("MBTest/v1.0","musicbrainz.org");
 
 	MusicBrainz5::CQuery::tParamMap Params5;
