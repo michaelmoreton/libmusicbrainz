@@ -112,7 +112,7 @@ public:
 
 	//
 	// If the JsonValue is a JSON object, return true if there is a JsonValue mapped to the
-	// supplied name, and the JsonValue isn't a JSON Null.
+	// supplied name.
 	bool has(const std::string &name) const;
 	bool has(const char * name) const;
 
