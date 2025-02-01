@@ -112,15 +112,20 @@ public:
 
 	//
 	// If the JsonValue is a JSON object, return true if there is a JsonValue mapped to the
-	// supplied name.
-	bool has(std::string &name) const;
+	// supplied name, and the JsonValue isn't a JSON Null.
+	bool has(const std::string &name) const;
 	bool has(const char * name) const;
+
+	//
+	// If the JsonValue is a JSON object, return true if there is a JsonValue mapped to the
+	// supplied name, and it is of the indicated type.
+	bool has(const std::string &name, enum VAL_TYPE type) const;
+	bool has(const char * name, enum VAL_TYPE type) const;
 
 	//
 	// If the JsonValue is a JSON array, return the JsonValue at the indicated index.
 	const JsonValue &operator[](unsigned idx) const;
 	const JsonValue &operator[](int idx) const;
-
 
 	//
 	// If the JsonValue is a JSON array, return the length of the array.

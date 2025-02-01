@@ -469,15 +469,30 @@ bool JsonValue::has(const char *name) const
 	return(has(nameString));
 }
 
-bool JsonValue::has(std::string &name) const
+bool JsonValue::has(const std::string &name) const
 {
-	checkForNull();
-	if (type_f != JSON_OBJECT) {
+	if (type_f == JSON_NULL) {
+		return(false);
+	} else if (type_f != JSON_OBJECT) {
 		throw AccessTypeException("Can't index non-object with string");
 	}
 
 	std::map<std::string, JsonValue>::const_iterator theEntry = nameValPairs_f.find(name);
 	return(theEntry != nameValPairs_f.end());
+}
+
+//
+// If the JsonValue is a JSON object, return true if there is a JsonValue mapped to the
+// supplied name, and it is of the indicated type.
+bool JsonValue::has(const std::string &name, enum JsonValue::VAL_TYPE type) const
+{
+	std::string nameString(name);
+	return(has(nameString, type));
+}
+
+bool JsonValue::has(const char * name, enum JsonValue::VAL_TYPE type) const
+{
+	return(has(name) && (type_f == type));
 }
 
 //
