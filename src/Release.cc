@@ -44,6 +44,8 @@
 #include "musicbrainz5/Collection.h"
 #include "musicbrainz5/CollectionList.h"
 #include "musicbrainz5/ReleaseEventList.h"
+#include "musicbrainz5/Tag.h"
+#include "musicbrainz5/TagList.h"
 
 class MusicBrainz5::CReleasePrivate
 {
@@ -56,7 +58,8 @@ class MusicBrainz5::CReleasePrivate
 			m_MediumList(0),
 			m_RelationListList(0),
 			m_CollectionList(0),
-			m_ReleaseEventList(0)
+			m_ReleaseEventList(0),
+			m_TagList(0)
 		{
 		}
 
@@ -78,6 +81,7 @@ class MusicBrainz5::CReleasePrivate
 		CRelationListList *m_RelationListList;
 		CCollectionList *m_CollectionList;
 		CReleaseEventList *m_ReleaseEventList;
+		CTagList *m_TagList;
 };
 
 MusicBrainz5::CRelease::CRelease(const XMLNode& Node)
@@ -142,6 +146,9 @@ MusicBrainz5::CRelease& MusicBrainz5::CRelease::operator =(const CRelease& Other
 
 		if (Other.m_d->m_ReleaseEventList)
 			m_d->m_ReleaseEventList=new CReleaseEventList(*Other.m_d->m_ReleaseEventList);
+
+		if (Other.m_d->m_TagList)
+			m_d->m_TagList=new CTagList(*Other.m_d->m_TagList);
 	}
 
 	return *this;
@@ -176,6 +183,9 @@ void MusicBrainz5::CRelease::Cleanup()
 
 	delete m_d->m_ReleaseEventList;
 	m_d->m_ReleaseEventList=0;
+
+	delete m_d->m_TagList;
+	m_d->m_TagList=0;
 }
 
 MusicBrainz5::CRelease *MusicBrainz5::CRelease::Clone()
@@ -267,9 +277,9 @@ void MusicBrainz5::CRelease::ParseElement(const XMLNode& Node)
 	{
 		ProcessItem(Node,m_d->m_ReleaseEventList);
 	}
-	else if ("release-event-list"==NodeName)
+	else if ("tags"==NodeName)
 	{
-		ProcessItem(Node,m_d->m_ReleaseEventList);
+		ProcessItem(Node,m_d->m_TagList);
 	}
 	else
 	{
@@ -372,6 +382,11 @@ MusicBrainz5::CCollectionList *MusicBrainz5::CRelease::CollectionList() const
 MusicBrainz5::CReleaseEventList *MusicBrainz5::CRelease::ReleaseEventList() const
 {
 	return m_d->m_ReleaseEventList;
+}
+
+MusicBrainz5::CTagList *MusicBrainz5::CRelease::TagList() const
+{
+	return m_d->m_TagList;
 }
 
 MusicBrainz5::CMediumList MusicBrainz5::CRelease::MediaMatchingDiscID(const std::string& DiscID) const
