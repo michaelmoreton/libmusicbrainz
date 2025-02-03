@@ -228,7 +228,7 @@ int main(int argc, const char *argv[])
 
 	std::cerr << "################# Testing Genres ####################################\n";
 	MusicBrainz5::CQuery::tParamMap Params9;
-	Params9["inc"]="genres+recordings";
+	Params9["inc"]="genres+recordings+release-groups";
 	MusicBrainz5::CMetadata Metadata9=MB2.Query("release","bde43131-e10f-4d0d-8767-7cb104d24bbd",
 			"",Params9);
 	MusicBrainz5::CRelease *Release9=Metadata9.Release();
@@ -265,6 +265,27 @@ int main(int argc, const char *argv[])
 	assert(Recording9->GenreList());
 
 	MusicBrainz5::CGenreList *GenreList9 = Recording9->GenreList();
+	std::cerr << *GenreList9;
+	for (int i = 0; i < GenreList9->NumItems(); i++) {
+		MusicBrainz5::CGenre *Genre9 = GenreList9->Item(i);
+		if (Genre9->Name() == "baroque") {
+			BaroqueFound = true;
+		} else if (Genre9->Name() == "classical") {
+			ClassicalFound = true;
+		}
+	}
+
+	assert(ClassicalFound);
+	assert(BaroqueFound);
+
+	//
+	// Now check the genre for the release group
+	ClassicalFound = false;
+	BaroqueFound = false;
+
+	assert(Release9->ReleaseGroup());
+	assert(Release9->ReleaseGroup()->GenreList());
+	GenreList9 = Release9->ReleaseGroup()->GenreList();
 	std::cerr << *GenreList9;
 	for (int i = 0; i < GenreList9->NumItems(); i++) {
 		MusicBrainz5::CGenre *Genre9 = GenreList9->Item(i);

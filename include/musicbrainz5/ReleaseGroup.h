@@ -35,6 +35,7 @@
 #include "musicbrainz5/TagList.h"
 #include "musicbrainz5/UserTagList.h"
 #include "musicbrainz5/SecondaryTypeList.h"
+#include "musicbrainz5/GenreList.h"
 
 #include "musicbrainz5/xmlParser.h"
 
@@ -70,6 +71,7 @@ namespace MusicBrainz5
 		CRating *Rating() const;
 		CUserRating *UserRating() const;
 		CSecondaryTypeList *SecondaryTypeList() const;
+		CGenreList * GenreList() const;
 
 		virtual std::ostream& Serialise(std::ostream& os) const;
 		static std::string GetElementName();
