@@ -59,6 +59,7 @@ class MusicBrainz5::CReleasePrivate
 			m_RelationListList(0),
 			m_CollectionList(0),
 			m_ReleaseEventList(0),
+			m_GenreList(0),
 			m_TagList(0)
 		{
 		}
@@ -81,6 +82,7 @@ class MusicBrainz5::CReleasePrivate
 		CRelationListList *m_RelationListList;
 		CCollectionList *m_CollectionList;
 		CReleaseEventList *m_ReleaseEventList;
+		CGenreList *m_GenreList;
 		CTagList *m_TagList;
 };
 
@@ -147,6 +149,9 @@ MusicBrainz5::CRelease& MusicBrainz5::CRelease::operator =(const CRelease& Other
 		if (Other.m_d->m_ReleaseEventList)
 			m_d->m_ReleaseEventList=new CReleaseEventList(*Other.m_d->m_ReleaseEventList);
 
+		if (Other.m_d->m_GenreList)
+			m_d->m_GenreList=new CGenreList(*Other.m_d->m_GenreList);
+
 		if (Other.m_d->m_TagList)
 			m_d->m_TagList=new CTagList(*Other.m_d->m_TagList);
 	}
@@ -183,6 +188,9 @@ void MusicBrainz5::CRelease::Cleanup()
 
 	delete m_d->m_ReleaseEventList;
 	m_d->m_ReleaseEventList=0;
+
+	delete m_d->m_GenreList;
+	m_d->m_GenreList=0;
 
 	delete m_d->m_TagList;
 	m_d->m_TagList=0;
@@ -276,6 +284,10 @@ void MusicBrainz5::CRelease::ParseElement(const XMLNode& Node)
 	else if ("release-event-list"==NodeName)
 	{
 		ProcessItem(Node,m_d->m_ReleaseEventList);
+	}
+	else if ("genre-list"==NodeName)
+	{
+		ProcessItem(Node,m_d->m_GenreList);
 	}
 	else if ("tags"==NodeName)
 	{
@@ -384,6 +396,11 @@ MusicBrainz5::CReleaseEventList *MusicBrainz5::CRelease::ReleaseEventList() cons
 	return m_d->m_ReleaseEventList;
 }
 
+MusicBrainz5::CGenreList *MusicBrainz5::CRelease::GenreList() const
+{
+	return m_d->m_GenreList;
+}
+
 MusicBrainz5::CTagList *MusicBrainz5::CRelease::TagList() const
 {
 	return m_d->m_TagList;
@@ -448,6 +465,9 @@ std::ostream& MusicBrainz5::CRelease::Serialise(std::ostream& os) const
 
 	if (ReleaseEventList())
 		os << *ReleaseEventList() << std::endl;
+
+	if (GenreList())
+		os << *GenreList() << std::endl;
 
 	return os;
 }

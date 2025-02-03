@@ -2,7 +2,7 @@
 
    libmusicbrainz5 - Client library to access MusicBrainz
 
-   Copyright (C) 2012 Andrew Hawkins
+   Copyright (C) 2012 Andrew Hawkins, Mike Moreton
 
    This file is part of libmusicbrainz5.
 
@@ -23,60 +23,30 @@
 
 ----------------------------------------------------------------------------*/
 
-#ifndef _MUSICBRAINZ5_RECORDING_H
-#define _MUSICBRAINZ5_RECORDING_H
+#ifndef _MUSICBRAINZ5_GENRE_LIST_H
+#define _MUSICBRAINZ5_GENRE_LIST_H
 
 #include <string>
 #include <iostream>
 
-namespace MusicBrainz5
-{
-	class CRecording;
-}
-
-#include "musicbrainz5/Entity.h"
-#include "musicbrainz5/ReleaseList.h"
-#include "musicbrainz5/PUIDList.h"
-#include "musicbrainz5/ISRCList.h"
-#include "musicbrainz5/RelationList.h"
-#include "musicbrainz5/TagList.h"
-#include "musicbrainz5/GenreList.h"
-#include "musicbrainz5/UserTagList.h"
+#include "musicbrainz5/ListImpl.h"
 
 #include "musicbrainz5/xmlParser.h"
 
 namespace MusicBrainz5
 {
-	class CRecordingPrivate;
+	class CGenre;
+	class CGenreListPrivate;
 
-	class CArtistCredit;
-	class CRating;
-	class CUserRating;
-
-	class CRecording: public CEntity
+	class CGenreList: public CListImpl<CGenre>
 	{
 	public:
-		CRecording(const XMLNode& Node=XMLNode::emptyNode());
-		CRecording(const CRecording& Other);
-		CRecording& operator =(const CRecording& Other);
-		virtual ~CRecording();
+		CGenreList(const XMLNode& Node=XMLNode::emptyNode());
+		CGenreList(const CGenreList& Other);
+		CGenreList& operator =(const CGenreList& Other);
+		virtual ~CGenreList();
 
-		virtual CRecording *Clone();
-
-		std::string ID() const;
-		std::string Title() const;
-		int Length() const;
-		std::string Disambiguation() const;
-		CArtistCredit *ArtistCredit() const;
-		CReleaseList *ReleaseList() const;
-		CPUIDList *PUIDList() const;
-		CISRCList *ISRCList() const;
-		CRelationListList *RelationListList() const;
-		CTagList *TagList() const;
-		CUserTagList *UserTagList() const;
-		CRating *Rating() const;
-		CUserRating *UserRating() const;
-		CGenreList *GenreList() const;
+		virtual CGenreList *Clone();
 
 		virtual std::ostream& Serialise(std::ostream& os) const;
 		static std::string GetElementName();
@@ -86,9 +56,7 @@ namespace MusicBrainz5
 		virtual void ParseElement(const XMLNode& Node);
 
 	private:
-		void Cleanup();
-
-		CRecordingPrivate * const m_d;
+		CGenreListPrivate * const m_d;
 	};
 }
 

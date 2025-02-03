@@ -38,6 +38,7 @@
 #include "musicbrainz5/ISRCList.h"
 #include "musicbrainz5/ISRC.h"
 #include "musicbrainz5/RelationListList.h"
+#include "musicbrainz5/GenreList.h"
 #include "musicbrainz5/Relation.h"
 #include "musicbrainz5/TagList.h"
 #include "musicbrainz5/Tag.h"
@@ -56,6 +57,7 @@ class MusicBrainz5::CRecordingPrivate
 			m_RelationListList(0),
 			m_TagList(0),
 			m_UserTagList(0),
+			m_GenreList(0),
 			m_Rating(0),
 			m_UserRating(0)
 		{
@@ -72,6 +74,7 @@ class MusicBrainz5::CRecordingPrivate
 		CRelationListList *m_RelationListList;
 		CTagList *m_TagList;
 		CUserTagList *m_UserTagList;
+		CGenreList *m_GenreList;
 		CRating *m_Rating;
 		CUserRating *m_UserRating;
 };
@@ -128,6 +131,9 @@ MusicBrainz5::CRecording& MusicBrainz5::CRecording::operator =(const CRecording&
 
 		if (Other.m_d->m_UserTagList)
 			m_d->m_UserTagList=new CUserTagList(*Other.m_d->m_UserTagList);
+
+		if (Other.m_d->m_GenreList)
+			m_d->m_GenreList=new CGenreList(*Other.m_d->m_GenreList);
 
 		if (Other.m_d->m_Rating)
 			m_d->m_Rating=new CRating(*Other.m_d->m_Rating);
@@ -207,6 +213,10 @@ void MusicBrainz5::CRecording::ParseElement(const XMLNode& Node)
 	{
 		ProcessItem(Node,m_d->m_UserTagList);
 	}
+	else if ("genre-list"==NodeName)
+	{
+		ProcessItem(Node,m_d->m_GenreList);
+	}
 	else if ("rating"==NodeName)
 	{
 		ProcessItem(Node,m_d->m_Rating);
@@ -250,6 +260,9 @@ void MusicBrainz5::CRecording::Cleanup()
 
 	delete m_d->m_UserTagList;
 	m_d->m_UserTagList=0;
+
+	delete m_d->m_GenreList;
+	m_d->m_GenreList=0;
 
 	delete m_d->m_Rating;
 	m_d->m_Rating=0;
@@ -313,6 +326,11 @@ MusicBrainz5::CUserTagList *MusicBrainz5::CRecording::UserTagList() const
 	return m_d->m_UserTagList;
 }
 
+MusicBrainz5::CGenreList *MusicBrainz5::CRecording::GenreList() const
+{
+	return m_d->m_GenreList;
+}
+
 MusicBrainz5::CRating *MusicBrainz5::CRecording::Rating() const
 {
 	return m_d->m_Rating;
@@ -354,6 +372,9 @@ std::ostream& MusicBrainz5::CRecording::Serialise(std::ostream& os) const
 
 	if (UserTagList())
 		os << *UserTagList() << std::endl;
+
+	if (GenreList())
+		os << *GenreList() << std::endl;
 
 	if (Rating())
 		os << *Rating() << std::endl;

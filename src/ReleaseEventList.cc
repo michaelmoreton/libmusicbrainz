@@ -92,7 +92,7 @@ void MusicBrainz5::CReleaseEventList::ParseElement(const XMLNode& Node)
 
 std::string MusicBrainz5::CReleaseEventList::GetElementName()
 {
-	return "medium-list";
+	return "release-event-list";
 }
 
 std::ostream& MusicBrainz5::CReleaseEventList::Serialise(std::ostream& os) const

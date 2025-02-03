@@ -26,6 +26,7 @@
 #include <iostream>
 
 #include <strings.h>
+#include <assert.h>
 
 #include "musicbrainz5/Query.h"
 #include "musicbrainz5/Release.h"
@@ -36,6 +37,7 @@
 #include "musicbrainz5/ArtistCredit.h"
 #include "musicbrainz5/Artist.h"
 #include "musicbrainz5/Alias.h"
+#include "musicbrainz5/Genre.h"
 #include "musicbrainz5/HTTPFetch.h"
 #include "musicbrainz5/Track.h"
 #include "musicbrainz5/Recording.h"
@@ -44,6 +46,7 @@
 #include "musicbrainz5/RelationListList.h"
 #include "musicbrainz5/RelationList.h"
 #include "musicbrainz5/Relation.h"
+#include "musicbrainz5/Medium.h"
 #include "musicbrainz5/Work.h"
 #include "musicbrainz5/ISWC.h"
 #include "musicbrainz5/ISWCList.h"
@@ -223,8 +226,61 @@ int main(int argc, const char *argv[])
 		}
 	}
 
+	std::cerr << "################# Testing Genres ####################################\n";
+	MusicBrainz5::CQuery::tParamMap Params9;
+	Params9["inc"]="genres+recordings";
+	MusicBrainz5::CMetadata Metadata9=MB2.Query("release","bde43131-e10f-4d0d-8767-7cb104d24bbd",
+			"",Params9);
+	MusicBrainz5::CRelease *Release9=Metadata9.Release();
+	assert(Release9);
+	
+	//
+	// Check the Genre for the album The Well-Tempered Piano by J.S.Bach
+	assert(Release9->GenreList());
+	std::cerr << *Release9->GenreList();
+	assert(Release9->GenreList()->NumItems() > 0);
+	assert(Release9->GenreList()->Item(0));
+	MusicBrainz5::CGenre *genre9= Release9->GenreList()->Item(0);
+	assert(genre9->Name().length() > 0);
+	assert(genre9->Name() == std::string("classical"));
+
+	//
+	// Now check the genre for track 2
+	bool ClassicalFound = false;
+	bool BaroqueFound = false;
+
+	assert(Release9->MediumList());
+	assert(Release9->MediumList()->NumItems() > 0);
+
+	MusicBrainz5::CMedium *Medium9 = Release9->MediumList()->Item(0);
+	assert(Medium9);
+	assert(Medium9->TrackList());
+	assert(Medium9->TrackList()->NumItems() >= 2);
+
+	MusicBrainz5::CTrack *Track9 = Medium9->TrackList()->Item(1);
+	assert(Track9);
+	assert(Track9->Recording());
+
+	MusicBrainz5::CRecording *Recording9 = Track9->Recording();
+	assert(Recording9->GenreList());
+
+	MusicBrainz5::CGenreList *GenreList9 = Recording9->GenreList();
+	std::cerr << *GenreList9;
+	for (int i = 0; i < GenreList9->NumItems(); i++) {
+		MusicBrainz5::CGenre *Genre9 = GenreList9->Item(i);
+		if (Genre9->Name() == "baroque") {
+			BaroqueFound = true;
+		} else if (Genre9->Name() == "classical") {
+			ClassicalFound = true;
+		}
+	}
+
+	assert(ClassicalFound);
+	assert(BaroqueFound);
+
 //	return 0;
 
+	std::cerr << "################# Testing Username & Password ################################\n";
 	MusicBrainz5::CQuery MB("MBTest/v1.0");
 
 	if (argc>1)

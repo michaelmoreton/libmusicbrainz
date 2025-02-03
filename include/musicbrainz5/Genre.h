@@ -2,7 +2,7 @@
 
    libmusicbrainz5 - Client library to access MusicBrainz
 
-   Copyright (C) 2012 Andrew Hawkins
+   Copyright (C) 2012 Andrew Hawkins, Mike Moreton
 
    This file is part of libmusicbrainz5.
 
@@ -23,60 +23,31 @@
 
 ----------------------------------------------------------------------------*/
 
-#ifndef _MUSICBRAINZ5_RECORDING_H
-#define _MUSICBRAINZ5_RECORDING_H
+#ifndef _MUSICBRAINZ5_GENRE_H
+#define _MUSICBRAINZ5_GENRE_H
 
 #include <string>
 #include <iostream>
 
-namespace MusicBrainz5
-{
-	class CRecording;
-}
-
 #include "musicbrainz5/Entity.h"
-#include "musicbrainz5/ReleaseList.h"
-#include "musicbrainz5/PUIDList.h"
-#include "musicbrainz5/ISRCList.h"
-#include "musicbrainz5/RelationList.h"
-#include "musicbrainz5/TagList.h"
-#include "musicbrainz5/GenreList.h"
-#include "musicbrainz5/UserTagList.h"
 
 #include "musicbrainz5/xmlParser.h"
 
 namespace MusicBrainz5
 {
-	class CRecordingPrivate;
+	class CGenrePrivate;
 
-	class CArtistCredit;
-	class CRating;
-	class CUserRating;
-
-	class CRecording: public CEntity
+	class CGenre: public CEntity
 	{
 	public:
-		CRecording(const XMLNode& Node=XMLNode::emptyNode());
-		CRecording(const CRecording& Other);
-		CRecording& operator =(const CRecording& Other);
-		virtual ~CRecording();
+		CGenre(const XMLNode& Node=XMLNode::emptyNode());
+		CGenre(const CGenre& Other);
+		CGenre& operator =(const CGenre& Other);
+		virtual ~CGenre();
 
-		virtual CRecording *Clone();
+		virtual CGenre *Clone();
 
-		std::string ID() const;
-		std::string Title() const;
-		int Length() const;
-		std::string Disambiguation() const;
-		CArtistCredit *ArtistCredit() const;
-		CReleaseList *ReleaseList() const;
-		CPUIDList *PUIDList() const;
-		CISRCList *ISRCList() const;
-		CRelationListList *RelationListList() const;
-		CTagList *TagList() const;
-		CUserTagList *UserTagList() const;
-		CRating *Rating() const;
-		CUserRating *UserRating() const;
-		CGenreList *GenreList() const;
+		std::string Name() const;
 
 		virtual std::ostream& Serialise(std::ostream& os) const;
 		static std::string GetElementName();
@@ -88,7 +59,7 @@ namespace MusicBrainz5
 	private:
 		void Cleanup();
 
-		CRecordingPrivate * const m_d;
+		CGenrePrivate * const m_d;
 	};
 }
 
