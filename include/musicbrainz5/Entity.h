@@ -73,6 +73,7 @@ namespace MusicBrainz5
 			if (Node.getText())
 				os << (const char *)Node.getText();
 
+			os.setf(std::ios_base::boolalpha); // Interpret true and false
 			os >> RetVal;
 			if (os.fail())
 			{

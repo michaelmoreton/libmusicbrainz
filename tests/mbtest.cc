@@ -52,6 +52,7 @@
 #include "musicbrainz5/ISWCList.h"
 #include "musicbrainz5/SecondaryType.h"
 #include "musicbrainz5/SecondaryTypeList.h"
+#include "musicbrainz5/CoverArtArchive.h"
 #include "musicbrainz5/IPI.h"
 #include "musicbrainz5/IPIList.h"
 #include "musicbrainz5/Lifespan.h"
@@ -117,11 +118,11 @@ int main(int argc, const char *argv[])
 		}
 	}
 
-//	return 0;
+//	return 1;
 
 	MusicBrainz5::CMetadata Metadata8=MB2.Query("release-group","2eefe885-f050-426d-93f0-29c5eb8b4f9a");
 	std::cout << Metadata8 << std::endl;
-//	return 0;
+//	return 1;
 
 	MusicBrainz5::CMetadata Metadata7=MB2.Query("artist","4b585938-f271-45e2-b19a-91c634b5e396");
 	Artist=Metadata7.Artist();
@@ -141,7 +142,7 @@ int main(int argc, const char *argv[])
 		}
 	}
 
-//	return 0;
+//	return 1;
 
 	MusicBrainz5::CMetadata Metadata6=MB2.Query("release-group","2eefe885-f050-426d-93f0-29c5eb8b4f9a");
 	MusicBrainz5::CReleaseGroup *ReleaseGroup=Metadata6.ReleaseGroup();
@@ -167,7 +168,7 @@ int main(int argc, const char *argv[])
 		}
 	}
 
-//	return 0;
+//	return 1;
 
 	MusicBrainz5::CMetadata Metadata4=MB2.Query("work","b0d17375-5593-390e-a936-1a65ce74c630");
 
@@ -299,7 +300,23 @@ int main(int argc, const char *argv[])
 	assert(ClassicalFound);
 	assert(BaroqueFound);
 
-//	return 0;
+//	return 1;
+
+	std::cerr << "################# Testing Cover Art Archive ##################################\n";
+	MusicBrainz5::CQuery::tParamMap Params10;
+	MusicBrainz5::CMetadata Metadata10=MB2.Query("release","bde43131-e10f-4d0d-8767-7cb104d24bbd",
+			"",Params10);
+	MusicBrainz5::CRelease *Release10=Metadata10.Release();
+	assert(Release10);
+
+	MusicBrainz5::CCoverArtArchive *CoverArtArchive = Release10->CoverArtArchive();
+	std::cerr << *CoverArtArchive << std::endl;
+	assert(CoverArtArchive);
+	assert(CoverArtArchive->Artwork());
+	assert(CoverArtArchive->Count() >= 1);
+	assert(CoverArtArchive->Front());
+
+// return 1;
 
 	std::cerr << "################# Testing Username & Password ################################\n";
 	MusicBrainz5::CQuery MB("MBTest/v1.0");
@@ -330,7 +347,7 @@ int main(int argc, const char *argv[])
 		}
 	}
 
-//	return 0;
+//	return 1;
 
 	MusicBrainz5::CQuery::tParamMap Params;
 	Params["inc"]="artists labels recordings release-groups url-rels discids recording-level-rels work-level-rels work-rels artist-rels";
@@ -379,7 +396,7 @@ int main(int argc, const char *argv[])
 		}
 	}
 
-//	return 0;
+//	return 1;
 
 	MusicBrainz5::CMetadata Metadata=MB.Query("collection");
 	MusicBrainz5::CCollectionList *CollectionList=Metadata.CollectionList();
@@ -406,7 +423,7 @@ int main(int argc, const char *argv[])
 		MB.Query("collection",Collection->ID(),"releases");
 	}
 
-//	return 0;
+//	return 1;
 
 	std::string DiscID="arIS30RPWowvwNEqsqdDnZzDGhk-";
 

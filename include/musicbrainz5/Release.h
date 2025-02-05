@@ -48,6 +48,7 @@ namespace MusicBrainz5
 	class CArtistCredit;
 	class CReleaseGroup;
 	class CMedium;
+	class CCoverArtArchive;
 
 	class CRelease: public CEntity
 	{
@@ -79,6 +80,7 @@ namespace MusicBrainz5
 		CReleaseEventList *ReleaseEventList() const;
 		CGenreList *GenreList() const;
 		CTagList *TagList() const;
+		CCoverArtArchive *CoverArtArchive() const;
 
 		CMediumList MediaMatchingDiscID(const std::string& DiscID) const;
 
